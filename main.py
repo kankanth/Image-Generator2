@@ -14,12 +14,19 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
+processing = set()
+
 @client.event
 async def on_message(message):
-    if message.author == client.user:
+    if message.author.bot:
+        return
+
+    if message.id in processing:
         return
 
     if message.content.startswith("!img "):
+        processing.add(message.id)
+
         prompt = message.content[5:]
         await message.channel.send("กำลังสร้างภาพ...")
 
@@ -32,6 +39,8 @@ async def on_message(message):
             await message.channel.send(file=discord.File("output.png"))
         else:
             await message.channel.send(response.text)
+
+        processing.remove(message.id)
 
 server_on()
 client.run(TOKEN)

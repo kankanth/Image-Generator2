@@ -12,4 +12,5 @@ def run():
 
 def server_on():
     t = Thread(target=run)
+    t.daemon = True
     t.start()
